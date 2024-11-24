@@ -1,0 +1,42 @@
+{
+  "name": "cafeteria",
+  "version": "1.0.0",
+  "description": "CaféDelight, cafeteria website",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "build": "react-scripts build",
+    "start": "node backend/server",
+    "server": "nodemon backend/server",
+    "client": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "data:import": "node backend/seeder",
+    "data:destroy": "node backend/seeder -d",
+    "build:client": "npm run build --prefix .\frontend"
+
+  },
+  "author": "Narinder Singh",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.5.1",
+    "colors": "^1.4.0",
+    "dotenv": "^8.6.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^6.10.0",
+    "mongoose": "^5.10.6",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.4",
+    "path": "^0.12.7",
+    "streamifier": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.22"
+  }
+}
