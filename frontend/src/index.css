@@ -84,18 +84,18 @@ h2 {
 }
 
 .carousel-image-container {
-  width: 600px;   /* Fixed width for the circular container */
-  height: 600px;  /* Fixed height for the circular container */
-  border-radius: 50%; /* Makes the container circular */
-  overflow: hidden; /* Ensures the image is clipped to fit the circle */
-  margin: 0 auto; /* Center the carousel items */
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
 }
 
 .carousel-image {
-  width: 100%;   /* Make sure the image fills the circular container */
-  height: 100%;  /* Ensure the image takes full height */
-  object-fit: cover; /* Maintain the aspect ratio and crop the image to fit */
-  border-radius: 50%; /* Ensure the image is also circular */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .carousel-caption {
@@ -112,19 +112,53 @@ h2 {
 }
 
 .carousel-title {
-  
   color: #ddd;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 0rem;
 }
 
-/* Optional: Add styles for carousel navigation or further customizations */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   background-color: #000000;
   border-radius: 50%;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .carousel-image-container {
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  nav ul li {
+    margin: 0.5rem 0;
+  }
+
+  .carousel-image-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .carousel-title {
+    font-size: 1rem;
+  }
+}
+
 
 
 /* 

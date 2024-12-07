@@ -6,73 +6,52 @@ import { useForm, ValidationError } from '@formspree/react';
 
 const Contact = () => {
   return (
-    <Container className="section">
+    <StyledContainer className="section">
       <div className="title">
         <h2>get in touch</h2>
         <div className="underline"></div>
       </div>
 
-      <SectionCenter className="section-center">
-        <ContactInfo>
-          <p>
-            If you have any questions or just want to get in touch, ping us via
-            the form. We look forward to hear from you!
-          </p>
-          {contactItems.map((item) => (
-            <div key={item.id} className="contact-item">
-              <span>{item.icon}</span>
-              <h5>{item.title}:</h5>
-              <p>{item.description}</p>
-            </div>
-          ))}
-        </ContactInfo>
-
+      <ContentWrapper className="section-center">
+        <ContactDetails />
         <ContactForm />
-      </SectionCenter>
-    </Container>
+      </ContentWrapper>
+    </StyledContainer>
   );
 };
+
+const ContactDetails = () => (
+  <StyledContactInfo>
+    <p>
+      If you have any questions or just want to get in touch, ping us via the form. We look forward to hearing from you!
+    </p>
+    {contactItems.map((item) => (
+      <div key={item.id} className="contact-item">
+        <span>{item.icon}</span>
+        <h5>{item.title}:</h5>
+        <p>{item.description}</p>
+      </div>
+    ))}
+  </StyledContactInfo>
+);
 
 const ContactForm = () => {
   const [state, handleSubmit] = useForm('xyyapqwr');
 
   return (
-    <FormContainer>
+    <StyledFormContainer>
       <form className="form" onSubmit={handleSubmit}>
         <h4 className="mb-4">
-          {state.succeeded
-            ? 'Your message has been sent!'
-            : 'send me a message'}
+          {state.succeeded ? 'Your message has been sent!' : 'send me a message'}
         </h4>
         <article>
-          <div className="contact-from-control">
-            <label htmlFor="Name">name</label>
-            <input type="text" name="Name" required />
-          </div>
-          <div className="contact-from-control">
-            <label htmlFor="Email">email</label>
-            <input type="email" name="Email" required />
-          </div>
+          <FormControl label="name" name="Name" type="text" required />
+          <FormControl label="email" name="Email" type="email" required />
         </article>
+        <FormControl label="subject" name="Subject" type="text" required />
+        <FormControl label="message" name="Message" type="textarea" placeholder="Your message here..." />
 
-        <div className="contact-from-control">
-          <label htmlFor="Subject">subject</label>
-          <input type="text" name="Subject" required />
-        </div>
-
-        <div className="contact-from-control">
-          <label htmlFor="Message">message</label>
-          <textarea
-            name="Message"
-            placeholder="Your message here..."
-          ></textarea>
-        </div>
-
-        <ValidationError
-          prefix="Message"
-          field="message"
-          errors={state.errors}
-        />
+        <ValidationError prefix="Message" field="message" errors={state.errors} />
 
         <button
           type="submit"
@@ -82,18 +61,30 @@ const ContactForm = () => {
           send message <FaLongArrowAltRight />
         </button>
       </form>
-    </FormContainer>
+    </StyledFormContainer>
   );
 };
 
-const Container = styled.section`
+const FormControl = ({ label, name, type, placeholder, required }) => (
+  <div className="contact-form-control">
+    <label htmlFor={name}>{label}</label>
+    {type === 'textarea' ? (
+      <textarea name={name} placeholder={placeholder} required={required}></textarea>
+    ) : (
+      <input type={type} name={name} required={required} />
+    )}
+  </div>
+);
+
+// Styled Components
+const StyledContainer = styled.section`
   .title {
     text-align: center;
     margin: 0 auto 2rem;
   }
 `;
 
-const SectionCenter = styled.div`
+const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -107,7 +98,7 @@ const SectionCenter = styled.div`
   }
 `;
 
-const ContactInfo = styled.article`
+const StyledContactInfo = styled.article`
   max-width: 592px;
   margin: 0 auto;
 
@@ -145,7 +136,7 @@ const ContactInfo = styled.article`
   }
 `;
 
-const FormContainer = styled.article`
+const StyledFormContainer = styled.article`
   .form {
     background-color: #f5f5f5;
     padding: 3rem 2rem;
@@ -163,7 +154,7 @@ const FormContainer = styled.article`
     text-align: center;
   }
 
-  .contact-from-control {
+  .contact-form-control {
     margin: 1rem 0;
 
     label {
@@ -193,7 +184,7 @@ const FormContainer = styled.article`
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
 
-    .contact-from-control {
+    .contact-form-control {
       margin: 0;
     }
   }

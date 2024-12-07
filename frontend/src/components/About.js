@@ -6,36 +6,33 @@ const About = () => {
   return (
     <Wrapper className="section">
       <div className="section-center">
-        <img src={aboutImg} alt="about-img" />
-        <article>
+        <ImageWrapper>
+          <img src={aboutImg} alt="about our cafeteria" />
+        </ImageWrapper>
+        <Content>
           <div className="title">
-            <h2>about us</h2>
+            <h2>about our cafeteria</h2>
             <div className="underline"></div>
           </div>
           <p>
-            <strong>CaféDelight</strong> is a café platform that seeks to
-            redefine the café culture by bridging the gap between urban and
-            semi-urban communities through innovative offerings. By providing a
-            welcoming space for indulgence, creativity, and community
-            engagement, this platform aims to celebrate the art of culinary
-            excellence and hospitality.
+            <strong>CafeteriaDelight</strong> is dedicated to creating a vibrant
+            and inclusive space where food, culture, and community come
+together. Our cafeteria offers a perfect blend of traditional and modern
+dining experiences, ensuring there’s something for everyone to savor.
+Whether it’s the smell of freshly brewed coffee, the taste of handcrafted
+pastries, or hearty meals made with locally sourced ingredients, we aim to
+delight your senses.
             <br />
-            India's culinary heritage is both diverse and unique, and when
-            combined with regional flavors and traditional techniques, it offers
-            a competitive advantage in the café industry. With the right support
-            and a focus on quality, the café market has the potential to grow
-            exponentially. A systematic approach that highlights the
-            authenticity of ingredients, fosters creativity in menu design, and
-            promotes exceptional customer service will pave the way for success.
+            Our mission is to redefine cafeteria culture by fostering connections
+            and celebrating culinary diversity. By incorporating innovative menu
+            options and promoting sustainable practices, we hope to provide not
+            just a meal but a memorable experience for all our visitors.
             <br />
-            As the café industry evolves and garners attention, leveraging
-            digital platforms for online visibility, seamless customer
-            experiences, and operational efficiency will be a key driver of
-            growth. **CaféDelight** envisions becoming a preferred destination
-            where flavors meet comfort, creating memorable moments for its
-            patrons.
+            At <strong>CafeteriaDelight</strong>, we believe that every meal is an
+            opportunity to create lasting memories. Join us for a unique
+            experience where comfort, quality, and community take center stage.
           </p>
-        </article>
+        </Content>
       </div>
     </Wrapper>
   );
@@ -48,27 +45,7 @@ const Wrapper = styled.section`
     display: grid;
     place-items: center;
     gap: 4rem;
-    img {
-      width: 100%;
-      display: block;
-      border-radius: var(--radius);
-      height: 500px;
-      object-fit: contain;
-    }
-    p {
-      line-height: 2;
-      max-width: 45em;
-      margin: 0 auto;
-      margin-top: 2rem;
-      color: var(--clr-grey-5);
-      text-transform: normal;
-    }
-    .title {
-      text-align: left;
-    }
-    .underline {
-      margin-left: 0;
-    }
+
     @media (min-width: 992px) {
       grid-template-columns: 1fr 1fr;
     }
@@ -76,6 +53,35 @@ const Wrapper = styled.section`
 
   @media (min-width: 1280px) {
     padding-top: 12rem;
+  }
+`;
+
+const ImageWrapper = styled.div`
+  img {
+    width: 100%;
+    display: block;
+    border-radius: var(--radius);
+    height: 500px;
+    object-fit: cover;
+  }
+`;
+
+const Content = styled.article`
+  .title {
+    text-align: left;
+  }
+
+  .underline {
+    margin-left: 0;
+  }
+
+  p {
+    line-height: 2;
+    max-width: 45em;
+    margin: 0 auto;
+    margin-top: 2rem;
+    color: var(--clr-grey-5);
+    text-transform: none;
   }
 `;
 
