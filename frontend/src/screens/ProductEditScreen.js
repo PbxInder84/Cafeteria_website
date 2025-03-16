@@ -1,16 +1,75 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Form, Button, Container } from "react-bootstrap";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import FormContainer from "../components/FormContainer";
 import { listProductDetails, updateProduct } from "../actions/productActions";
 import { PRODUCT_UPDATE_RESET } from "../constants/productConstants";
+import PageLayout from '../components/layout/PageLayout';
+import styled from 'styled-components';
 
-const ProductEditScreen = ({ match, history }) => {
-  const productId = match.params.id;
+const ProductForm = styled(Form)`
+  .form-control {
+    padding: 0.8rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    
+    &:focus {
+      box-shadow: none;
+      border-color: #6c5ce7;
+    }
+  }
+  
+  .form-label {
+    font-weight: 500;
+  }
+  
+  .btn-primary {
+    background-color: #6c5ce7;
+    border-color: #6c5ce7;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    
+    &:hover {
+      background-color: #5649c0;
+      border-color: #5649c0;
+    }
+  }
+  
+  .btn-secondary {
+    background-color: #718096;
+    border-color: #718096;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-right: 1rem;
+    
+    &:hover {
+      background-color: #4a5568;
+      border-color: #4a5568;
+    }
+  }
+`;
+
+const ImagePreview = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  
+  img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ProductEditScreen = () => {
+  const { id: productId } = useParams();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
@@ -36,7 +95,7 @@ const ProductEditScreen = ({ match, history }) => {
   useEffect(() => {
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET });
-      history.push("/admin/productlist");
+      navigate("/admin/productlist");
     } else {
       if (!product.name || product._id !== productId) {
         dispatch(listProductDetails(productId));
@@ -50,7 +109,7 @@ const ProductEditScreen = ({ match, history }) => {
         setDescription(product.description);
       }
     }
-  }, [dispatch, history, productId, product, successUpdate]);
+  }, [dispatch, navigate, productId, product, successUpdate]);
 
   const uploadFileHandler = async (e) => {
     const file = e.target.files[0];
@@ -92,10 +151,18 @@ const ProductEditScreen = ({ match, history }) => {
   };
 
   return (
-    <Container>
+    <PageLayout 
+      title="Edit Product" 
+      breadcrumbItems={[
+        { name: 'Admin', link: '/admin' },
+        { name: 'Products', link: '/admin/productlist' },
+        { name: 'Edit', link: '' }
+      ]}
+    >
       <Link to="/admin/productlist" className="btn btn-light my-3">
-        Go Back
+        <i className="fas fa-arrow-left"></i> Go Back
       </Link>
+      
       <FormContainer>
         <h1>Edit Product</h1>
         {loadingUpdate && <Loader />}
@@ -105,18 +172,18 @@ const ProductEditScreen = ({ match, history }) => {
         ) : error ? (
           <Message variant="danger">{error}</Message>
         ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId="name">
+          <ProductForm onSubmit={submitHandler}>
+            <Form.Group controlId="name" className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control
-                type="name"
+                type="text"
                 placeholder="Enter name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="price">
+            <Form.Group controlId="price" className="mb-3">
               <Form.Label>Price</Form.Label>
               <Form.Control
                 type="number"
@@ -126,7 +193,7 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="image">
+            <Form.Group controlId="image" className="mb-3">
               <Form.Label>Image</Form.Label>
               <Form.Control
                 type="text"
@@ -134,16 +201,22 @@ const ProductEditScreen = ({ match, history }) => {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
               ></Form.Control>
-              <Form.File
-                id="image-file"
+              <Form.Control
+                type="file"
                 label="Choose File"
-                custom
                 onChange={uploadFileHandler}
-              ></Form.File>
+                className="mt-2"
+              ></Form.Control>
               {uploading && <Loader />}
+              
+              {image && (
+                <ImagePreview>
+                  <img src={image} alt={name} />
+                </ImagePreview>
+              )}
             </Form.Group>
 
-            <Form.Group controlId="brand">
+            <Form.Group controlId="brand" className="mb-3">
               <Form.Label>Brand</Form.Label>
               <Form.Control
                 type="text"
@@ -153,7 +226,7 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="countInStock">
+            <Form.Group controlId="countInStock" className="mb-3">
               <Form.Label>Count In Stock</Form.Label>
               <Form.Control
                 type="number"
@@ -163,7 +236,7 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="category">
+            <Form.Group controlId="category" className="mb-3">
               <Form.Label>Category</Form.Label>
               <Form.Control
                 type="text"
@@ -173,23 +246,29 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId="description">
+            <Form.Group controlId="description" className="mb-3">
               <Form.Label>Description</Form.Label>
               <Form.Control
-                type="text"
+                as="textarea"
+                rows={5}
                 placeholder="Enter description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               ></Form.Control>
             </Form.Group>
 
-            <Button type="submit" variant="primary">
-              Update
-            </Button>
-          </Form>
+            <div className="d-flex">
+              <Button type="button" variant="secondary" onClick={() => navigate('/admin/productlist')}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary">
+                Update
+              </Button>
+            </div>
+          </ProductForm>
         )}
       </FormContainer>
-    </Container>
+    </PageLayout>
   );
 };
 

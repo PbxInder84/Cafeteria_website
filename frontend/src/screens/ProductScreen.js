@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Row,
@@ -9,28 +9,139 @@ import {
   Card,
   Button,
   Form,
-  Container,
 } from 'react-bootstrap'
 import Rating from '../components/Rating'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import Meta from '../components/Meta'
+import PageLayout from '../components/layout/PageLayout'
 import {
   listProductDetails,
   createProductReview,
 } from '../actions/productActions'
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/productConstants'
+import styled from 'styled-components'
+import ReviewList from '../components/reviews/ReviewList'
+import ReviewForm from '../components/reviews/ReviewForm'
 
-const ProductScreen = ({ history, match }) => {
+const ProductImage = styled(Image)`
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+`
+
+const ProductInfo = styled(ListGroup)`
+  .list-group-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    
+    &:first-child {
+      padding-top: 0;
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  h3 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+`
+
+const PriceCard = styled(Card)`
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: none;
+  
+  .list-group-item {
+    padding: 1rem;
+    border-bottom: 1px solid #f5f5f5;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .btn-primary {
+    background-color: #6c5ce7;
+    border-color: #6c5ce7;
+    padding: 0.75rem;
+    font-weight: 600;
+    
+    &:hover {
+      background-color: #5649c0;
+      border-color: #5649c0;
+    }
+  }
+`
+
+const ReviewSection = styled.div`
+  margin-top: 3rem;
+  
+  h2 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    position: relative;
+    
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background-color: #6c5ce7;
+    }
+  }
+  
+  .list-group-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #eee;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .btn-primary {
+    background-color: #6c5ce7;
+    border-color: #6c5ce7;
+    
+    &:hover {
+      background-color: #5649c0;
+      border-color: #5649c0;
+    }
+  }
+`
+
+const BackButton = styled(Link)`
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #666;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: #6c5ce7;
+    transform: translateX(-5px);
+  }
+  
+  i {
+    margin-right: 5px;
+  }
+`
+
+const ProductScreen = () => {
   const [qty, setQty] = useState(1)
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
 
+  const { id } = useParams()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, error, product } = productDetails
-  console.log(product)
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -43,29 +154,22 @@ const ProductScreen = ({ history, match }) => {
   } = productReviewCreate
 
   useEffect(() => {
-    window.scroll({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    })
     if (successProductReview) {
       setRating(0)
       setComment('')
-    }
-    if (!product._id || product._id !== match.params.id) {
-      dispatch(listProductDetails(match.params.id))
       dispatch({ type: PRODUCT_CREATE_REVIEW_RESET })
     }
-  }, [dispatch, match, product._id, successProductReview])
+    dispatch(listProductDetails(id))
+  }, [dispatch, id, successProductReview])
 
   const addToCartHandler = () => {
-    history.push(`/cart/${match.params.id}?qty=${qty}`)
+    navigate(`/cart/${id}?qty=${qty}`)
   }
 
   const submitHandler = (e) => {
     e.preventDefault()
     dispatch(
-      createProductReview(match.params.id, {
+      createProductReview(id, {
         rating,
         comment,
       })
@@ -73,23 +177,30 @@ const ProductScreen = ({ history, match }) => {
   }
 
   return (
-    <Container>
-      <Link className="btn btn-light my-3" to="/">
-        Go Back
-      </Link>
+    <PageLayout 
+      title={loading ? 'Product Details' : product.name}
+      breadcrumbItems={[
+        { name: 'Home', link: '/' },
+        { name: 'Products', link: '/products' },
+        { name: loading ? 'Product Details' : product.name, link: '' }
+      ]}
+    >
+      <BackButton to="/">
+        <i className="fas fa-arrow-left"></i> Back to Products
+      </BackButton>
+      
       {loading ? (
         <Loader />
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
         <>
-          <Meta title={product.name} />
           <Row>
-            <Col className="center" md={6}>
-              <Image src={product.image} alt={product.name} fluid />
+            <Col md={6}>
+              <ProductImage src={product.image} alt={product.name} fluid />
             </Col>
             <Col md={3}>
-              <ListGroup variant="flush">
+              <ProductInfo variant="flush">
                 <ListGroup.Item>
                   <h3>{product.name}</h3>
                 </ListGroup.Item>
@@ -99,37 +210,37 @@ const ProductScreen = ({ history, match }) => {
                     text={`${product.numReviews} reviews`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item>Price: &#8377;{product.price}</ListGroup.Item>
                 <ListGroup.Item>
-                  Description: {product.description}
+                  <strong>Price:</strong> ${product.price}
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <span className="bold">Brand:</span> {product.brand}
+                  <strong>Description:</strong> {product.description}
                 </ListGroup.Item>
-              </ListGroup>
+                <ListGroup.Item>
+                  <strong>Brand:</strong> {product.brand}
+                </ListGroup.Item>
+              </ProductInfo>
             </Col>
             <Col md={3}>
-              <Card>
+              <PriceCard>
                 <ListGroup variant="flush">
                   <ListGroup.Item>
                     <Row>
-                      <Col className="left-center">Price:</Col>
-                      <Col className="left-center">
-                        <strong>&#8377;{product.price}</strong>
+                      <Col>Price:</Col>
+                      <Col>
+                        <strong>${product.price}</strong>
                       </Col>
                     </Row>
                   </ListGroup.Item>
 
                   <ListGroup.Item>
                     <Row>
-                      <Col className="left-center">Availability:</Col>
-                      <Col className="left-center">
-                        {product.countInStock >= 5 ? (
-                          'In Stock'
-                        ) : product.countInStock > 0 ? (
-                          <span className="warning pad-5 ">{`Only ${product.countInStock} left!`}</span>
+                      <Col>Status:</Col>
+                      <Col>
+                        {product.countInStock > 0 ? (
+                          <span className="text-success">In Stock</span>
                         ) : (
-                          <span className="dull pad-5 ">Out Of Stock</span>
+                          <span className="text-danger">Out Of Stock</span>
                         )}
                       </Col>
                     </Row>
@@ -138,14 +249,14 @@ const ProductScreen = ({ history, match }) => {
                   {product.countInStock > 0 && (
                     <ListGroup.Item>
                       <Row>
-                        <Col className="left-center">Qty</Col>
-                        <Col className="left-center">
+                        <Col>Qty</Col>
+                        <Col>
                           <Form.Control
                             as="select"
                             value={qty}
                             onChange={(e) => setQty(e.target.value)}
                           >
-                            {[...Array(product.countInStock).keys()].map(
+                            {[...Array(Math.min(product.countInStock, 10)).keys()].map(
                               (x) => (
                                 <option key={x + 1} value={x + 1}>
                                   {x + 1}
@@ -161,87 +272,52 @@ const ProductScreen = ({ history, match }) => {
                   <ListGroup.Item>
                     <Button
                       onClick={addToCartHandler}
-                      className="btn-block"
+                      className="btn-block w-100"
                       type="button"
                       disabled={product.countInStock === 0}
                     >
+                      <i className="fas fa-shopping-cart me-2"></i>
                       Add To Cart
                     </Button>
                   </ListGroup.Item>
                 </ListGroup>
-              </Card>
+              </PriceCard>
             </Col>
           </Row>
-          <Row>
-            <Col md={6}>
-              <h2>Reviews</h2>
-              {product.reviews.length === 0 && <Message>No Reviews</Message>}
-              <ListGroup variant="flush">
-                {product.reviews.map((review) => (
-                  <ListGroup.Item key={review._id}>
-                    <strong>{review.name}</strong>
-                    <Rating value={review.rating} />
-                    <p>{review.createdAt.substring(0, 10)}</p>
-                    <p>{review.comment}</p>
-                  </ListGroup.Item>
-                ))}
-                <ListGroup.Item>
-                  <h2>Write a Customer Review</h2>
-                  {successProductReview && (
-                    <Message variant="success">
-                      Review submitted successfully
-                    </Message>
-                  )}
-                  {loadingProductReview && <Loader />}
-                  {errorProductReview && (
-                    <Message variant="danger">{errorProductReview}</Message>
-                  )}
-                  {userInfo ? (
-                    <Form onSubmit={submitHandler}>
-                      <Form.Group controlId="rating">
-                        <Form.Label>Rating</Form.Label>
-                        <Form.Control
-                          as="select"
-                          value={rating}
-                          onChange={(e) => setRating(e.target.value)}
-                        >
-                          <option value="">Select...</option>
-                          <option value="1">1 - Poor</option>
-                          <option value="2">2 - Fair</option>
-                          <option value="3">3 - Good</option>
-                          <option value="4">4 - Very Good</option>
-                          <option value="5">5 - Excellent</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group controlId="comment">
-                        <Form.Label>Comment</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          row="3"
-                          value={comment}
-                          onChange={(e) => setComment(e.target.value)}
-                        ></Form.Control>
-                      </Form.Group>
-                      <Button
-                        disabled={loadingProductReview}
-                        type="submit"
-                        variant="primary"
-                      >
-                        Submit
-                      </Button>
-                    </Form>
-                  ) : (
-                    <Message>
-                      Please <Link to="/login">sign in</Link> to write a review{' '}
-                    </Message>
-                  )}
-                </ListGroup.Item>
-              </ListGroup>
-            </Col>
-          </Row>
+          
+          <ReviewSection>
+            <Row>
+              <Col md={6}>
+                <h2>Reviews</h2>
+                {userInfo ? (
+                  <ReviewForm 
+                    submitHandler={(reviewData) => {
+                      dispatch(
+                        createProductReview(id, {
+                          rating: reviewData.rating,
+                          comment: reviewData.comment,
+                        })
+                      );
+                    }}
+                  />
+                ) : (
+                  <Message>
+                    Please <Link to="/login">sign in</Link> to write a review
+                  </Message>
+                )}
+              </Col>
+              <Col md={12}>
+                <ReviewList 
+                  reviews={product.reviews} 
+                  title={`Reviews (${product.reviews.length})`}
+                  showVerified={true}
+                />
+              </Col>
+            </Row>
+          </ReviewSection>
         </>
       )}
-    </Container>
+    </PageLayout>
   )
 }
 

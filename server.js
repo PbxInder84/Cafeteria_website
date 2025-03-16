@@ -31,16 +31,13 @@ app.use('/api/orders', orderRoutes) // Order-related routes
 app.use('/api/upload', uploadRoutes); // File upload routes
 app.use('/api/cart', cartRoutes); // Cart-related routes
 
-// PayPal configuration route
-app.get('/api/config/paypal', (req, res) =>
-  res.send(process.env.PAYPAL_CLIENT_ID)
-)
 
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads'))) // Serve static files from uploads folder
 
 // Serve frontend static files in production
 app.use(express.static(path.resolve(__dirname, "frontend", "build")));
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html')); // Serve React app
 });

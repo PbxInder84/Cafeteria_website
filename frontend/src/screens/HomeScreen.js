@@ -1,25 +1,33 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
+import Meta from '../components/layout/Meta';
+import HeroSection from '../components/home/HeroSection';
+import FeaturesSection from '../components/home/FeaturesSection';
+import ProductsShowcase from '../components/home/ProductsShowcase';
+import TestimonialsSection from '../components/home/TestimonialsSection';
+import AboutSection from '../components/home/AboutSection';
+import ServicesOverview from '../components/home/ServicesOverview';
+import BlogPreview from '../components/home/BlogPreview';
+import ContactSection from '../components/home/ContactSection';
+import CTASection from '../components/home/CTASection';
+import { listProducts } from '../actions/productActions';
 import Product from '../components/Product';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import Paginate from '../components/Paginate';
 import ProductCarousel from '../components/ProductCarousel';
-import Meta from '../components/Meta';
-import { listProducts } from '../actions/productActions';
-import Services from '../components/Services';
-import About from '../components/About';
-import Contact from '../components/Contact';
+import styled from 'styled-components';
+import Breadcrumb from '../components/layout/Breadcrumb';
 
-const HomeScreen = ({ match }) => {
-  const keyword = match.params.keyword;
-
-  const pageNumber = match.params.pageNumber || 1;
+const HomeScreen = () => {
+  // Use React Router v6 hooks
+  const params = useParams();
+  const keyword = params.keyword || '';
+  const pageNumber = params.pageNumber || 1;
 
   const dispatch = useDispatch();
-
   const productList = useSelector((state) => state.productList);
   const { loading, error, products, page, pages } = productList;
 
@@ -32,59 +40,41 @@ const HomeScreen = ({ match }) => {
       top: 0,
       left: 0,
       behavior: 'auto',
-    })
-  }, [pageNumber])
+    });
+  }, [pageNumber]);
+
   return (
     <>
-      <section className="products-slider section">
-        <Meta />
-        {!keyword ? (
-          <ProductCarousel />
-        ) : (
-          <Container>
-            <Link to="/" className="btn btn-light">
-              Go Back
-            </Link>
-          </Container>
-        )}
-      </section>
-
-      <div className="section popular-products">
-        <Container>
-          <h1>Popular Products</h1>
-          {loading ? (
-            <Loader />
-          ) : error ? (
-            <Message variant="danger">{error}</Message>
-          ) : (
-            <>
-              <Row>
-                {products.map((product) => (
-                  <Col
-                    className="product_cards_container"
-                    key={product._id}
-                    xs={6}
-                    md={4}
-                    lg={4}
-                    xl={3}
-                  >
-                    <Product product={product} />
-                  </Col>
-                ))}
-              </Row>
-              <Paginate
-                pages={pages}
-                page={page}
-                keyword={keyword ? keyword : ''}
-              />
-            </>
-          )}
+      <Meta />
+      {!keyword ? (
+        <>
+          <HeroSection />
+          <FeaturesSection />
+          <AboutSection />
+          <ProductsShowcase 
+            title="Featured Products"
+            products={products}
+            loading={loading}
+            error={error}
+          />
+          <CTASection 
+            title="Create Your Perfect Coffee"
+            description="Customize your coffee experience with our unique blends and brewing methods. Tell us your preferences, and we'll craft the perfect cup just for you."
+            buttonText="Start Customizing"
+            buttonLink="/services/custom-coffee"
+            backgroundImage="/images/cta-bg.jpg"
+          />
+          <ServicesOverview />
+          <BlogPreview />
+          <ContactSection />
+        </>
+      ) : (
+        <Container className="py-3">
+          <Breadcrumb items={[{ name: `Search: ${keyword}`, link: '' }]} />
+          <h1>Search Results for "{keyword}"</h1>
         </Container>
-      </div>
-
-      <Services />
-      <About />
-      <Contact />
+      )}
+      
     </>
   );
 };

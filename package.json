@@ -6,14 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "react-scripts build",
-    "start": "node backend/server",
-    "server": "nodemon backend/server",
-    "client": "npm start --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "data:import": "node backend/seeder",
-    "data:destroy": "node backend/seeder -d",
-    "build:client": "npm run build --prefix .\frontend"
-
+    "start": "nodemon server",
+    "dev": "nodemon server"
   },
   "author": "Narinder Singh",
   "license": "MIT",

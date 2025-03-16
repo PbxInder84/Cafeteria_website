@@ -5,5 +5,5 @@ const generateToken = (id) => {
     expiresIn: '1d',
   })
 }
-
+4
 export default generateToken
